@@ -1,0 +1,38 @@
+services:
+ 
+  mysql:
+    image: mysql:8.0
+    container_name: moviehub-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: moviehub
+      MYSQL_USER: movieuser
+      MYSQL_PASSWORD: moviepassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+ 
+  backend:
+    build:
+      context: ./Backend
+    container_name: moviehub-backend
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    ports:
+      - "8000:8000"
+ 
+  frontend:
+    build:
+      context: ./frontend
+    container_name: moviehub-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "5173:5173"
+ 
+volumes:
+  mysql_data:
